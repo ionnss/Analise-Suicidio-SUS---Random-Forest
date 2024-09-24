@@ -1,0 +1,92 @@
+Leonardo:1)Aplique a regressão Logistica primeiro com class_weight='balanced'
+         2) depois vc pode ir variando o peso  veja exemplo:class_weight={0: 1, 1: 100}
+         3) Vai verificando se o recall e precisão vão melhorando para o suicidio sem afetar muito a qualidade 
+          global (acuracia)
+         4) Verifique no Python se tem algum comando para escolher as melhores variáveis nesse conjunto na
+           regressao logistica
+
+
+import numpy as np
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
+
+
+X, y = make_classification(n_samples=1000, n_features=20, n_classes=2, weights=[0.9, 0.1], random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LogisticRegression(class_weight='balanced', random_state=42)
+
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print(classification_report(y_test, y_pred))
+
+peso
+
+0: 1000/2*900=0.56
+1: 1000/2*100=5
+
+
+Então, os pesos calculados seriam aproximadamente 0.56 para a Classe 0 e 5 para a Classe 1.
+
+
+Aplicação na Regressão Logística
+Ao treinar o modelo de regressão logística, esses pesos são aplicados na função de custo (log-loss), o que significa que os erros de classificação na Classe 1 são penalizados 5 vezes mais do que os erros na Classe 0.
+
+
+
+
+print(confusion_matrix(y_test, y_pred))
+>> print(classification_report(y_test, y_pred))
+              precision    recall  f1-score   support
+
+           0       0.97      0.88      0.92       180
+           1       0.41      0.75      0.53        20
+
+    accuracy                           0.86       200
+   macro avg       0.69      0.81      0.72       200
+weighted avg       0.91      0.86      0.88       200
+
+>>> print(confusion_matrix(y_test, y_pred))
+[[158  22]
+ [  5  15]]
+
+
+
+# Ajuste de pesos das classes
+
+classe 0 peso 1 e classe 1 peso 100
+model = LogisticRegression(class_weight={0: 1, 1: 100}, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+print(classification_report(y_test, y_pred))
+
+
+                precision    recall  f1-score   support
+
+           0       0.98      0.52      0.68       180
+           1       0.17      0.90      0.29        20
+
+    accuracy                           0.56       200
+   macro avg       0.58      0.71      0.48       200
+weighted avg       0.90      0.56      0.64       200
+
+
+
+
+Exemplo:
+
+Precisão :  TP/(TP+FP): TP:verdadeiro positivo FP:FALSO POSITIVO
+RECALL:    TP/(TP+FN)  FN:Falso negativo
+	Predita: Classe 0	Predita: Classe 1
+Real: Classe 0	50 (TP_0)	10 (FN_0)
+Real: Classe 1	5 (FP_0)	100 (TN_1)
+Cálculos
+Precisão da Classe 0: 50/50+5 =0.909
+
+
+Recall :  50/50+10=0.8333
+
